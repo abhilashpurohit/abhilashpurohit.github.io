@@ -1,0 +1,122 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>Blog Listing</title>
+    <link href="https://unpkg.com/tailwindcss@^2/dist/tailwind.min.css" rel="stylesheet">
+    <script src="https://unpkg.com/alpinejs" defer></script>
+</head>
+<body>
+    <div class="text-gray-600">
+        <div class="bg-white border pl-72 py-4 flex items-center justify-middle">
+            <div class="text-2xl font-bold w-1/2">Consultant</div>
+            <div class="flex w-1/2 space-x-12 text-sm">
+                <div class=""><a href="#" class="hover:text-blue-600">Home</a></div>
+                <div class=""><a href="/blog" class="hover:text-blue-600">Blog</a></div>
+                <div class=""><a href="#" class="hover:text-blue-600">Pricing</a></div>
+                <div class=""><a href="/about" class="hover:text-blue-600">About</a></div>
+                <div class=""><a href="#" class="hover:text-blue-600">Contact</a></div>
+            </div>
+        </div>
+        <div class="pl-36 mt-16" x-data="blog()" x-init="fetchBlog()">
+            <div class="bg-white">
+                <div class="w-1/2 mx-auto">
+                    <img :src="image" alt="" class="">
+                    <div class="mt-6">
+                        <h2 class="text-4xl font-thin" x-text="title"></h2>
+                        <div class="mt-4 mb-6" x-html="body"></div>
+                    </div>
+
+                    <div class="mt-4" x-show="comments.length > 0">
+                        <hr class="border">
+                        <div class="flex justify-between mt-4">
+                            <h2 class="text-xl font-semibold"><span x-text="comments.length"></span> comment(s)</h2>
+                            <button @click="showCommentForm = true" class="bg-red-500 text-white px-4 py-2 rounded">Add comment</button>
+                        </div>
+
+                        <div x-show="showCommentForm" class="mt-4 p-4 bg-gray-200">
+                            <input x-model="commenterName" type="text" class="border border-black w-1/2 p-2" placeholder="Your Name">
+                            <textarea x-model="commentBody" class="mt-2 border border-black w-full h-24 p-2 focus:outline-none" placeholder="Add your comment here..."></textarea>
+                            <button class="bg-red-500 text-white py-2 px-4" @click="addComment()">Submit</button>
+                        </div>
+
+                        <template x-for="comment in comments">
+                            <div class="mt-6 flex">
+                                <div class="text-md border-l-2 pl-6 w-2/3 overflow-auto" x-text="comment.body"></div>
+                                <div class="w-1/3 ml-8">
+                                    <div class="text-red-500" x-text="comment.name"></div>
+                                    <div class="text-sm" x-text="convert(comment.datetime)"></div>
+                                </div>
+                            </div>
+                        </template>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="h-96"></div>
+        
+    </div>
+    <script>
+        function blog(){
+            return {
+                image: '',
+                title: '',
+                body: '',
+                showCommentForm: false,
+                commenterName: '',
+                commentBody: '',
+                comments: [],
+
+                // Fetch data from database by making an API call
+                fetchBlog(){
+
+                    this.image = 'https://images.unsplash.com/photo-1621569976126-161164c49cef?ixid=MnwxMjA3fDF8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&ixlib=rb-1.2.1&auto=format&fit=crop&w=967&q=80';
+                    
+                    this.title = 'How to register your own domain name?';
+                    
+                    this.body = `
+                        <p class="font-bold">Lorem, ipsum dolor sit amet consectetur adipisicing elit. Earum, tempore? Assumenda obcaecati, in tempora deleniti exercitationem iusto necessitatibus eos laborum eligendi temporibus aspernatur nostrum debitis aut itaque ipsa sapiente? Voluptate.</p>
+                        <p class="mt-4">Lorem, ipsum dolor sit amet consectetur adipisicing elit. Earum, tempore? Assumenda obcaecati, in tempora deleniti exercitationem iusto necessitatibus eos laborum eligendi temporibus aspernatur nostrum debitis aut itaque ipsa sapiente? Voluptate.</p>
+                        <p class="mt-4">Lorem, ipsum dolor sit amet consectetur adipisicing elit. Earum, tempore? Assumenda obcaecati, in tempora deleniti exercitationem iusto necessitatibus eos laborum eligendi temporibus aspernatur nostrum debitis aut itaque ipsa sapiente? Voluptate.</p>
+                    `;
+                    
+                    this.comments.push(
+                        {
+                            name:'Alice', 
+                            body: 'Comment from Database', 
+                            datetime: Date.now(),
+                        },
+                    )
+                },
+
+                addComment(){
+
+                    if(this.commenterName.trim() == "" || this.commentBody.trim() == ""){
+                        alert('Enter a name and a comment!');
+                        return false;
+                    }
+
+                    var newComment = {
+                        name: this.commenterName,
+                        body: this.commentBody,
+                        datetime: Date.now(),
+                    };
+                    // Insert into database
+                    this.comments.push(newComment);
+
+                    this.showCommentForm = false;
+                    this.commenterName = "";
+                    this.commentBody = "";
+
+                },
+                convert(date){
+                    var utc = new Date(date);
+                    return `${utc.getHours()}:${utc.getMinutes()} | ${utc.getDate()}-${utc.getMonth()}-${utc.getFullYear()}`;
+                }
+            };
+        }
+    </script>
+</body>
+</html>
